@@ -1,3 +1,11 @@
+# Self defined
+.vscode
+.DS_Store
+test
+tests
+main.c
+a.out
+
 # Prerequisites
 *.d
 
