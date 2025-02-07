@@ -6,15 +6,29 @@
 /*   By: fyudris <fyudris@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/03 15:17:18 by fyudris           #+#    #+#             */
-/*   Updated: 2025/02/03 16:08:58 by fyudris          ###   ########.fr       */
+/*   Updated: 2025/02/07 16:08:23 by fyudris          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
 
+void	*ft_memcpy(void *dst, void *src, size_t n)
+{
+	unsigned char	*d;
+	unsigned char	*s;
+
+	if (!dst && !src)
+		return (NULL);
+	d = (unsigned char *)dst;
+	s = (unsigned char *)src;
+	while (n--)
+		*d++ = *s++;
+	return (dst);
+}
+
 size_t	ft_strlen(const char *s)
 {
-	size_t	len;
+	size_t len;
 
 	len = 0;
 	while (s[len])
@@ -22,63 +36,55 @@ size_t	ft_strlen(const char *s)
 	return (len);
 }
 
-char	*ft_strjoin(char const *s1, char const *s2)
+void	ft_bzero(void *s, size_t n)
+{
+	while (n--)
+		*(char *)s++ = 0;
+}
+
+/**
+ * @brief Appends buffer contents to line
+ */
+char	*ft_strjoin_gnl(char *line, char *buffer, int *eol_post)
 {
 	char	*result;
-	int		i;
-	int		j;
+	size_t	len1;
+	size_t	len2;
 
-	if (!s1 || !s2)
+	if (!line || !buffer)
 		return (NULL);
-	i = 0;
-	j = 0;
-	result = (char *) malloc((ft_strlen(s1)
-				+ ft_strlen(s2) + 1) * sizeof(char));
+
+	len1 = ft_strlen(line);
+	len2 = ft_strlen(buffer);
+	result = (char *) malloc (sizeof(char) * (len1 + len2 + 1));
 	if (!result)
+	{
+		free(line);
 		return (NULL);
-	while (s1[j])
-		result[i++] = s1[j++];
-	j = 0;
-	while (s2[j])
-		result[i++] = s2[j++];
-	result[i] = 0;
+	}
+	ft_memcpy(result, line, len1);
+	free(line);
+	ft_memcpy(result + len1, buffer, len2 + 1);
+	if (len1 + len2 > 0 && *(result + len1 + len2 - 1) == '\n')
+		*eol_post = 0;
 	return (result);
 }
 
-char	*ft_strchr(const char *string, int search)
+/**
+ * @brief Saves leftover data in stash
+ */
+void	ft_strlcpy_gnl(char *dst, const char *src, size_t dstsize)
 {
-	char	*str;
-
-	str = (char *) string;
-	while (*str != search && *str != 0)
-		str++;
-	if (*str == search)
-		return (str);
-	else
-		return (NULL);
-}
-
-void	ft_bzero(void *s, size_t n)
-{
-	char	*str;
 	size_t	i;
 
-	str = (char *) s;
 	i = 0;
-	while (i < n)
+	if (dstsize > 0)
 	{
-		str[i] = '\0';
-		i++;
+		while (src[i] && i < dstsize - 1)
+		{
+			dst[i] = src[i];
+			i++;
+		}
+		dst[i] = '\0';
 	}
-}
-
-void	*ft_calloc(size_t count, size_t size)
-{
-	char	*res;
-
-	res = malloc(size * count);
-	if (!res)
-		return (NULL);
-	ft_bzero(res, size * count);
-	return (res);
 }

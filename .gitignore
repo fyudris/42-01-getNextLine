@@ -5,6 +5,8 @@ test
 tests
 main.c
 a.out
+*.txt
+*.gch
 
 # Prerequisites
 *.d
