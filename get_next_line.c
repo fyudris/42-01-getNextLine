@@ -6,148 +6,136 @@
 /*   By: fyudris <fyudris@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/03 12:41:05 by fyudris           #+#    #+#             */
-/*   Updated: 2025/02/07 16:42:51 by fyudris          ###   ########.fr       */
+/*   Updated: 2025/02/08 23:50:00 by fyudris          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
 
-size_t	find_eol(char *line)
-{
-	size_t i;
-
-	i = 0;
-	if(!line)
-		return (-1);
-	while (i < BUFFER_SIZE)
-	{
-		if (line[i] == '\n' || line[i] == '\0')
-			return (i + 1);
-		i++;
-	}
-	return (i);
-}
-
 /**
- * @brief Reads data from a file descriptor (fd) and appends it to line until a newline (\n) is found.
+ * @brief Finds the position of a newline ('\n') character in a string. Uses ft_memchr for efficiency.
  *
- * @param line  string being built to store the full line
- * @param stash buffer holding leftover data from previous read
- * @param eol_post pointer to tract the position of '\n' in the buffer
- * @param fd file descriptor to read from
+ * @param str The input string to search for a newline character.
+ * @return The index of the newline character, or 0 if not found.
  */
-char	*extract_line(char *line, char *stash, int *eol_post, int fd)
+size_t	find_newline_index(const char *str)
 {
-	char	buffer[BUFFER_SIZE + 1];
-	ssize_t	read_check;
-	size_t	line_size; // track bytes successfully read from fd ( > 0: success, 0: EOF, -1: Error)
-	while (*eol_post == -1)
-	{
-		ft_bzero(buffer, BUFFER_SIZE + 1);
-		read_check = read(fd, buffer, BUFFER_SIZE);
+	char	*newline_ptr;
 
-		// printf("📥 [Read %zd bytes]: \"%s\"\n", read_check, buffer);
-
-		if (read_check == -1)
-		{
-			free(line);
-			ft_bzero(stash, BUFFER_SIZE + 1);
-			return (NULL);
-		}
-		line_size = find_eol(buffer);
-		ft_strlcpy_gnl(stash, &buffer[line_size], (BUFFER_SIZE + 1));
-
-		// printf("🗄️ [Updated Stash]: \"%s\"\n", stash);
-
-		buffer[line_size] = '\0';
-
-		// printf("📌 [Buffer to Append]: \"%s\"\n", buffer);
-
-		line = ft_strjoin_gnl(line, buffer, eol_post);
-
-		// printf("✍️ [Updated Line]: \"%s\"\n", line);
-
-		if (read_check == 0)
-		{
-			ft_bzero(stash, BUFFER_SIZE + 1);
-			break ;
-		}
-	}
-	return (line);
+	newline_ptr = ft_memchr(str, '\n', ft_strlen(str));
+	if (newline_ptr)
+		return ((size_t) (newline_ptr - str + 1));
+	else
+		return (0);
 }
 
 /**
- * @brief Look for the first occurence of '\n' in the stash
+ * @brief Reads from a file descriptor and appends to the buffer.
+ *
+ * @param fd The file descriptor to read form.
+ * @param buffer The buffer to store read characters.
+ * @return The number of bytes read, or -1 if an error occurs.
  */
-char	*init_line(char *stash, int *eol_post)
+ssize_t	read_into_buffer(int fd, char *buffer)
 {
-	size_t	len;
-	char	*line;
+	char	temp_buffer[BUFFER_SIZE + 1];
+	ssize_t	bytes_read;
 
-	len = 0;
-	while (stash[len] && stash[len] != '\n')
-		len++;
-	line = malloc(sizeof(char) * (len + 1));
+	bytes_read = read(fd, temp_buffer, BUFFER_SIZE);
+	if (bytes_read > 0)
+	{
+		temp_buffer[bytes_read] = '\0';
+		ft_strlcpy_gnl(buffer + ft_strlen(buffer), temp_buffer, BUFFER_SIZE + 1 - ft_strlen(buffer));
+	}
+	return (bytes_read);
+}
+
+/**
+ * @brief Extracts a line from the buffer and dynamically grows the returned string.
+ *
+ * @param buffer The buffer containing the text
+ * @return The extracted line as a dynamically allocated string.
+ */
+char	*retrieve_line_from_buffer(char *buffer)
+{
+	size_t	newline_index;
+	char	*line;
+	char	temp[BUFFER_SIZE + 1];
+	size_t	read_bytes;
+
+	newline_index = find_newline_index(buffer);
+	line = malloc(1);
 	if (!line)
 		return (NULL);
-	ft_memcpy(line, stash, len);
-	line[len] = '\0';
-	if (len > 0 && line[len - 1] == '\n')
-		*eol_post = len - 1;
-	return (line);
+	line[0] = '\0';
+	while (newline_index == 0 && buffer[0])
+	{
+		ft_strlcpy_gnl(temp, buffer, BUFFER_SIZE + 1);
+		line = ft_strjoin_gnl(line, temp);
+		if (!line)
+			return (NULL);
+		buffer[0] = '\0';
+		read_bytes = read_into_buffer(0, buffer);
+		if (read_bytes == 0)
+			break ;
+		newline_index = find_newline_index(buffer);
+	}
+	if (buffer[0])
+	{
+		ft_strlcpy_gnl(temp, buffer, newline_index + 1);
+		char *temp_line  = ft_strjoin_gnl(line, temp);
+		if (!temp_line)
+		{
+			free(line);
+			return (NULL);
+		}
+		line = temp_line;
+		ft_memmove(buffer, buffer + newline_index, BUFFER_SIZE - newline_index);
+		buffer[BUFFER_SIZE - newline_index] = '\0';
+	}
+	return (*line ? line : NULL);
 }
 
+/**
+ * @brief Reads and returns the next line from a file descriptor.
+ *
+ * @param fd The file descriptor to read from.
+ * @return A dynamically allocated string containing the next line, or NULL on failure.
+ */
 char	*get_next_line(int fd)
 {
-	static char	stash[BUFFER_SIZE + 1];
-	char		*line;
-	int			eol_post;
+	static char buffer[BUFFER_SIZE + 1];
+	ssize_t read_status;
 
 	if (fd < 0 || BUFFER_SIZE <= 0)
 		return (NULL);
-	eol_post = -1;
-
-	// printf("\n🔹 [Before init_line] stash: \"%s\"\n", stash);
-	line = init_line(stash, &eol_post);
-	// printf("🔹 [After init_line] Extracted Line: \"%s\", eol_post: %d\n", line ? line : "NULL", eol_post);
-
-	if (!line)
-		return (NULL);
-	ft_strlcpy_gnl(stash, &stash[eol_post + 1], BUFFER_SIZE + 1);
-	line = extract_line(line, stash, &eol_post, fd);
-	if (!line || line[0] == '\0')
+	while (!find_newline_index(buffer))
 	{
-		free (line);
-		return (NULL);
+		read_status = read_into_buffer(fd, buffer);
+		if (read_status == -1)
+			return (NULL);
+		if (read_status == 0 && buffer[0] == '\0')
+			return (NULL);
 	}
-	return (line);
+	return (retrieve_line_from_buffer(buffer));
 }
 
-// int main(void)
-// {
-//     int		fd;
-//     char	*line;
-// 	char	*filename = "text1.txt";
-
-//     // Open the file in read-only mode
-//     fd = open(filename, O_RDONLY);
-//     if (fd == -1)
-//     {
-//         perror("Error opening file");
-//         return (1);
-//     }
-
-// 	printf("\n📌 Reading from file: %s\n\n", filename);
-
-//     while ((line = get_next_line(fd)) != NULL)
-//     {
-//         printf("➡ Line: %s", line);
-//         free(line);
-//     }
-
-//     // Close the file
-//     close(fd);
-
-//     printf("\n✅ Finished reading file!\n");
-//     return (0);
-// }
+//TODO: Delete this
+int	main(void)
+{
+	char	*filename = "test.txt";
+	int		fd = open(filename, O_RDONLY);
+	if (fd == -1)
+	{
+		perror("Error opening file");
+		return (1);
+	}
+	char	*line;
+	while ((line = get_next_line(fd)))
+	{
+		printf("%s", line);
+		free(line);
+	}
+	close(fd);
+	return (0);
+}

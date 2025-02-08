@@ -6,7 +6,7 @@
 /*   By: fyudris <fyudris@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/03 12:44:55 by fyudris           #+#    #+#             */
-/*   Updated: 2025/02/07 16:09:25 by fyudris          ###   ########.fr       */
+/*   Updated: 2025/02/08 23:50:15 by fyudris          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,18 +23,19 @@
 #include <stdio.h>
 
 # ifndef BUFFER_SIZE
-#  define BUFFER_SIZE 5
+#  define BUFFER_SIZE 42
 # endif
 
 char	*get_next_line(int fd);
-char	*extract_line(char *line, char *stash, int *eol_post, int fd);
-char	*init_line(char *stash, int *eol_post);
-size_t	find_eol(char *line);
+size_t	find_newline_index(const char *str);
+ssize_t	read_into_buffer(int fd, char *buffer);
+char	*retrieve_line_from_buffer(char *buffer);
 
-void	*ft_memcpy(void *dst, void *src, size_t n);
+void	*ft_memchr(const void *s, int c, size_t n);
 size_t	ft_strlen(const char *s);
-void	ft_bzero(void *s, size_t n);
-char	*ft_strjoin_gnl(char *line, char *buffer, int *eol_post);
-void	ft_strlcpy_gnl(char *dst, const char *src, size_t dstsize);
+void	*ft_memcpy(void *dest, const void *src, size_t n);
+void	*ft_memmove(void *dst, const void *src, size_t len);
+size_t	ft_strlcpy_gnl(char *dst, const char *src, size_t dstsize);
+char	*ft_strjoin_gnl(char *existing_text, char *new_text);
 
 #endif
