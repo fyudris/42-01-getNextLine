@@ -6,149 +6,106 @@
 /*   By: fyudris <fyudris@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/03 15:17:18 by fyudris           #+#    #+#             */
-/*   Updated: 2025/02/08 23:27:52 by fyudris          ###   ########.fr       */
+/*   Updated: 2025/02/09 22:56:36 by fyudris          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
 
 /**
- * @brief Custom implementation of ft_memchr to locate a character in a memory block.
+ * @brief Computes the length of a string (excluding the null terminator).
  *
- * @param s The memory block to search.
- * @param c The character to find.
- * @param n The number of bytes to search.
- * @return A pointer to the character if found, or NULL otherwise.
+ * @param str A pointer to the null-terminated string.
+ * @return The length of the string.
  */
-void	*ft_memchr(const void *s, int c, size_t n)
+size_t	ft_strlen(const char *str)
+{
+	const char *s;
+
+	s = str;
+	while (*s)
+		s++;
+	return (size_t)(s - str);
+}
+
+/**
+ * @brief Sets the first n bytes of the memory area pointed to by s to zero.
+ *
+ * @param s A pointer to the memory area to fill.
+ * @param n The number of bytes to be set to zero.
+ */
+void	ft_bzero(void *s, size_t n)
 {
 	unsigned char	*ptr;
 
-	ptr = (unsigned char *) s;
+	ptr = s;
 	while (n--)
-	{
-		if (*ptr == (unsigned char) c)
-			return ptr;
-		ptr++;
-	}
-	return (NULL);
+		*ptr++ = 0;
 }
 
 /**
- * @brief Measure string length.
+ * @brief Allocates memory for an array and initializes all bytes to zero.
  *
- * @param s The input string.
- * @return The length of the string.
+ * @param elem_count The number of elements to allocate.
+ * @param elem_size The size in bytes of each element.
+ * @return A pointer to the allocated memory, or NULL if the allocation fails.
  */
-size_t	ft_strlen(const char *s)
+void	*ft_calloc(size_t elem_count, size_t elem_size)
 {
-	size_t	len;
+	void	*ptr;
 
-	len = 0;
-	while (s[len])
-		len++;
-	return (len);
+	ptr = malloc(elem_count * elem_size);
+	if (ptr)
+		ft_bzero(ptr, elem_count * elem_size);
+	return (ptr);
 }
 
 /**
- * @brief Copies memory area.
+ * @brief Locates the first occurrence of a character in a string.
  *
- * @param dest Destination buffer.
- * @param src Source buffer.
- * @param n Number of bytes to copy.
- * @return Pointer to destination buffer.
+ * @param s The null-terminated string to search.
+ * @param c The character to locate (provided as an int but converted to char).
+ * @return A pointer to the first occurrence of the character in s, or NULL if the character is not found.
  */
-void	*ft_memcpy(void *dest, const void *src, size_t n)
+char	*ft_strchr(const char *string, int searchChar)
 {
-	unsigned char		*d;
-	const unsigned char	*s;
+	char	*str;
 
-	d = (unsigned char *) dest;
-	s = (const unsigned char *) src;
-	while (n--)
-		*d++ = *s++;
-	return (dest);
-}
-
-/**
- * @brief Custom implementation of ft_memmove to shift memory safely.
- *
- * @param dst The destination memory.
- * @param src The source memory.
- * @param len The number of bytes to move.
- * @return A pointer to the destination memory.
- */
-void	*ft_memmove(void *dst, const void *src, size_t len)
-{
-	unsigned char		*d;
-	const unsigned char	*s;
-
-	d = (unsigned char *) dst;
-	s = (const unsigned char *) src;
-	if (d == s || len == 0)
-		return (dst);
-	if (d < s)
-	{
-		while (len--)
-			*d++ = *s++;
-	}
+	str = (char *)string;
+	while (*str && *str != searchChar)
+		str++;
+	if (*str == searchChar)
+		return (str);
 	else
-	{
-		d +=len;
-		s += len;
-		while (len--)
-			*(--d) = *(--s);
-	}
-	return (dst);
+		return (NULL);
 }
 
 /**
- * @brief Custom implementation of ft_strlcpy to safely copy strings.
+ * @brief Concatenates two strings into a newly allocated string.
  *
- * @param dst The destination buffer.
- * @param src The source string.
- * @param dstsize The size of the destination buffer.
- * @return The length of the source string.
+ * @param s1 The first null-terminated string.
+ * @param s2 The second null-terminated string.
+ * @return A pointer to the newly allocated concatenated string, or NULL on error.
  */
-size_t	ft_strlcpy_gnl(char *dst, const char *src, size_t dstsize)
+char	*ft_strjoin(const char *s1, const char *s2)
 {
-	size_t	i;
+	char	*result;
+	char	*temp;
+	size_t	len1;
+	size_t	len2;
 
-	i = 0;
-	if (dstsize > 0)
-	{
-		while (src[i] && i < dstsize - 1)
-		{
-			dst[i] = src[i];
-			i ++;
-		}
-		dst[i] = '\0';
-	}
-	return ft_strlen(src);
-}
-
-char	*ft_strjoin_gnl(char *existing_text, char *new_text)
-{
-	size_t	existing_len;
-	size_t	new_len;
-	char	*combined_text;
-
-	if (!existing_text)
-	{
-		existing_text = malloc(ft_strlen(new_text) + 1);
-		if (!existing_text)
-			return (NULL);
-		ft_strlcpy_gnl(existing_text, new_text, ft_strlen(new_text) + 1);
-		return (existing_text);
-	}
-	existing_len = ft_strlen(existing_text);
-	new_len = ft_strlen(new_text);
-	combined_text = malloc(existing_len + new_len + 1);
-	if (!combined_text)
-		return (existing_text);
-	ft_memcpy(combined_text, existing_text, existing_len);
-	ft_memcpy(combined_text + existing_len, new_text, new_len);
-	combined_text[existing_len + new_len] = '\0';
-	free(existing_text);
-	return (combined_text);
+	if (!s1 || !s2)
+		return (NULL);
+	len1 = ft_strlen(s1);
+	len2 = ft_strlen(s2);
+	result = malloc(len1 + len2 + 1);
+	if (!result)
+		return (NULL);
+	temp = result;
+	while (*s1)
+		*temp++ = *s1++;
+	while (*s2)
+		*temp++ = *s2++;
+	*temp = '\0';
+	return (result);
 }

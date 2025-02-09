@@ -6,7 +6,7 @@
 /*   By: fyudris <fyudris@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/03 12:44:55 by fyudris           #+#    #+#             */
-/*   Updated: 2025/02/08 23:50:15 by fyudris          ###   ########.fr       */
+/*   Updated: 2025/02/09 22:57:51 by fyudris          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,15 +27,11 @@
 # endif
 
 char	*get_next_line(int fd);
-size_t	find_newline_index(const char *str);
-ssize_t	read_into_buffer(int fd, char *buffer);
-char	*retrieve_line_from_buffer(char *buffer);
 
-void	*ft_memchr(const void *s, int c, size_t n);
-size_t	ft_strlen(const char *s);
-void	*ft_memcpy(void *dest, const void *src, size_t n);
-void	*ft_memmove(void *dst, const void *src, size_t len);
-size_t	ft_strlcpy_gnl(char *dst, const char *src, size_t dstsize);
-char	*ft_strjoin_gnl(char *existing_text, char *new_text);
+size_t	ft_strlen(const char *str);
+void	ft_bzero(void *s, size_t n);
+void	*ft_calloc(size_t elem_count, size_t elem_size);
+char	*ft_strchr(const char *string, int searchChar);
+char	*ft_strjoin(const char *s1, const char *s2);
 
 #endif
