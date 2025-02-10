@@ -1,16 +1,16 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   get_next_line.c                                    :+:      :+:    :+:   */
+/*   get_next_line_bonus.c                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: fyudris <fyudris@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/03 12:41:05 by fyudris           #+#    #+#             */
-/*   Updated: 2025/02/10 16:42:51 by fyudris          ###   ########.fr       */
+/*   Updated: 2025/02/10 17:02:33 by fyudris          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "get_next_line.h"
+#include "get_next_line_bonus.h"
 
 /**
  * @brief Appends new content to the existing buffer and frees the old buffer.
@@ -154,16 +154,16 @@ char	*read_from_fd(int fd, char *result)
  */
 char	*get_next_line(int fd)
 {
-	static char	*buffer;
+	static char	*buffer[FOPEN_MAX];
 	char		*line;
 
 	if (fd < 0 || BUFFER_SIZE <= 0 || read(fd, 0, 0))
 		return (0);
-	buffer = read_from_fd(fd, buffer);
+	buffer[fd] = read_from_fd(fd, buffer);
 	if (!buffer)
 		return (NULL);
 	line = extract_line(buffer);
-	buffer = extract_remaining(buffer);
+	buffer[fd] = extract_remaining(buffer);
 	return (line);
 }
 
