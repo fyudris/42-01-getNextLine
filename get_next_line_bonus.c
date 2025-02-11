@@ -6,7 +6,7 @@
 /*   By: fyudris <fyudris@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/03 12:41:05 by fyudris           #+#    #+#             */
-/*   Updated: 2025/02/10 17:02:33 by fyudris          ###   ########.fr       */
+/*   Updated: 2025/02/11 06:47:50 by fyudris          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -154,16 +154,20 @@ char	*read_from_fd(int fd, char *result)
  */
 char	*get_next_line(int fd)
 {
-	static char	*buffer[FOPEN_MAX];
+	static char	*buffer[OPEN_MAX];
 	char		*line;
 
-	if (fd < 0 || BUFFER_SIZE <= 0 || read(fd, 0, 0))
+	if (fd < 0 || fd >= OPEN_MAX || BUFFER_SIZE <= 0)
 		return (0);
-	buffer[fd] = read_from_fd(fd, buffer);
-	if (!buffer)
+	buffer[fd] = read_from_fd(fd, buffer[fd]);
+	if (!buffer[fd])
+	{
+		// free(buffer[fd]);
+		// buffer[fd] = NULL;
 		return (NULL);
-	line = extract_line(buffer);
-	buffer[fd] = extract_remaining(buffer);
+	}
+	line = extract_line(buffer[fd]);
+	buffer[fd] = extract_remaining(buffer[fd]);
 	return (line);
 }
 

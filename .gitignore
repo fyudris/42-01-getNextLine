@@ -1,11 +1,8 @@
 # Self defined
 .vscode
 .DS_Store
-test
-tests
 main.c
 a.out
-*.txt
 *.gch
 
 # Prerequisites
