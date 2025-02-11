@@ -1,7 +1,6 @@
 # Self defined
 .vscode
 .DS_Store
-main.c
 a.out
 *.gch
 

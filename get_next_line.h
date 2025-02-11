@@ -6,7 +6,7 @@
 /*   By: fyudris <fyudris@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/03 12:44:55 by fyudris           #+#    #+#             */
-/*   Updated: 2025/02/10 16:21:51 by fyudris          ###   ########.fr       */
+/*   Updated: 2025/02/11 15:23:44 by fyudris          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,10 +17,6 @@
 # include <sys/types.h>
 # include <sys/uio.h>
 # include <unistd.h>
-
-// TODO: Remove this
-#include <fcntl.h>
-#include <stdio.h>
 
 # ifndef BUFFER_SIZE
 #  define BUFFER_SIZE 42

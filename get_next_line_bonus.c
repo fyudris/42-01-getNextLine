@@ -6,7 +6,7 @@
 /*   By: fyudris <fyudris@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/03 12:41:05 by fyudris           #+#    #+#             */
-/*   Updated: 2025/02/11 06:47:50 by fyudris          ###   ########.fr       */
+/*   Updated: 2025/02/11 15:13:40 by fyudris          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,8 @@
  *
  * @param buffer The current accumulated content.
  * @param new_content The newly read content to append.
- * @return A pointer to the newly allocated buffer containing the concatenated content.
+ * @return A pointer to the newly allocated buffer containing the
+ concatenated content.
  */
 char	*append_and_free(char *buffer, char *new_content)
 {
@@ -32,10 +33,12 @@ char	*append_and_free(char *buffer, char *new_content)
 }
 
 /**
- * @brief Extracts the remaining content after the first newline in the buffer.
+ * @brief Extracts the remaining content after the first newline in the
+ buffer.
  *
- * This function finds the first newline in the buffer and returns a newly allocated
- * string containing everything after that newline. The original buffer is freed.
+ * This function finds the first newline in the buffer and returns a newly
+ allocated string containing everything after that newline. The original
+ buffer is freed.
  *
  * @param buffer The current buffer containing file content.
  * @return A pointer to the remaining content after the first newline,
@@ -72,11 +75,14 @@ char	*extract_remaining(char *buffer)
 /**
  * @brief Extracts the next line from the buffer.
  *
- * This function extracts characters from the buffer up to and including the first
- * newline character (if present) and returns them as a new string. The buffer itself is not modified.
+ * This function extracts characters from the buffer up to and including
+ the first
+ * newline character (if present) and returns them as a new string.
+ The buffer itself is not modified.
  *
  * @param buffer The current buffer containing file content.
- * @return A newly allocated string containing the next line, or NULL if the buffer is empty.
+ * @return A newly allocated string containing the next line, or NULL
+ if the buffer is empty.
  */
 char	*extract_line(char *buffer)
 {
@@ -105,8 +111,10 @@ char	*extract_line(char *buffer)
 /**
  * @brief Reads content from a file descriptor until a newline is encountered.
  *
- * This function reads from the given file descriptor in chunks of size BUFFER_SIZE,
- * appending the read data to the accumulated result until a newline character is encountered
+ * This function reads from the given file descriptor in chunks of size
+ BUFFER_SIZE,
+ * appending the read data to the accumulated result until a newline character
+ is encountered
  * or there is nothing left to read.
  *
  * @param fd The file descriptor to read from.
@@ -145,48 +153,27 @@ char	*read_from_fd(int fd, char *result)
 /**
  * @brief Retrieves the next line from a file descriptor.
  *
- * This function uses a static buffer to keep track of previously read content.
- * It reads from the file descriptor until a newline is encountered, extracts the next
- * line from the buffer, updates the buffer with the remaining content, and returns the line.
+ * This function uses a static buffer to keep track of previously read
+ content.
+ * It reads from the file descriptor until a newline is encountered,
+ extracts the next line from the buffer, updates the buffer with the remaining
+ content, and returns the line.
  *
  * @param fd The file descriptor to read from.
- * @return The next line read from the file descriptor, or NULL if there is no more content or on error.
+ * @return The next line read from the file descriptor, or NULL if there is no
+ more content or on error.
  */
 char	*get_next_line(int fd)
 {
-	static char	*buffer[OPEN_MAX];
+	static char	*buffer[FOPEN_MAX];
 	char		*line;
 
-	if (fd < 0 || fd >= OPEN_MAX || BUFFER_SIZE <= 0)
+	if (fd < 0 || fd >= FOPEN_MAX || BUFFER_SIZE <= 0)
 		return (0);
 	buffer[fd] = read_from_fd(fd, buffer[fd]);
 	if (!buffer[fd])
-	{
-		// free(buffer[fd]);
-		// buffer[fd] = NULL;
 		return (NULL);
-	}
 	line = extract_line(buffer[fd]);
 	buffer[fd] = extract_remaining(buffer[fd]);
 	return (line);
 }
-
-//TODO: Delete this
-// int	main(void)
-// {
-// 	char	*filename = "text1.txt";
-// 	int		fd = open(filename, O_RDONLY);
-// 	if (fd == -1)
-// 	{
-// 		perror("Error opening file");
-// 		return (1);
-// 	}
-// 	char	*line;
-// 	while ((line = get_next_line(fd)))
-// 	{
-// 		printf("%s", line);
-// 		free(line);
-// 	}
-// 	close(fd);
-// 	return (0);
-// }

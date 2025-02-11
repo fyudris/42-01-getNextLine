@@ -6,7 +6,7 @@
 /*   By: fyudris <fyudris@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/03 12:44:55 by fyudris           #+#    #+#             */
-/*   Updated: 2025/02/10 22:50:30 by fyudris          ###   ########.fr       */
+/*   Updated: 2025/02/11 15:23:38 by fyudris          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,14 +18,11 @@
 # include <sys/types.h>
 # include <sys/uio.h>
 # include <unistd.h>
+# include <stdio.h>
 
 # ifndef BUFFER_SIZE
 #  define BUFFER_SIZE 42
 # endif
-
-// TODO: Remove this
-#include <fcntl.h>
-#include <stdio.h>
 
 char	*get_next_line(int fd);
 char	*read_from_fd(int fd, char *result);

@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   get_next_line_utils.c                              :+:      :+:    :+:   */
+/*   get_next_line_utils_bonus.c                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: fyudris <fyudris@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/03 15:17:18 by fyudris           #+#    #+#             */
-/*   Updated: 2025/02/10 16:31:02 by fyudris          ###   ########.fr       */
+/*   Updated: 2025/02/11 15:15:35 by fyudris          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,12 +20,12 @@
  */
 size_t	ft_strlen(const char *str)
 {
-	const char *s;
+	const char	*s;
 
 	s = str;
 	while (*s)
 		s++;
-	return (size_t)(s - str);
+	return ((size_t)(s - str));
 }
 
 /**
@@ -65,7 +65,8 @@ void	*ft_calloc(size_t elem_count, size_t elem_size)
  *
  * @param s The null-terminated string to search.
  * @param c The character to locate (provided as an int but converted to char).
- * @return A pointer to the first occurrence of the character in s, or NULL if the character is not found.
+ * @return A pointer to the first occurrence of the character in s, or NULL
+ if the character is not found.
  */
 char	*ft_strchr(const char *string, int searchChar)
 {
@@ -85,7 +86,8 @@ char	*ft_strchr(const char *string, int searchChar)
  *
  * @param s1 The first null-terminated string.
  * @param s2 The second null-terminated string.
- * @return A pointer to the newly allocated concatenated string, or NULL on error.
+ * @return A pointer to the newly allocated concatenated string,
+ or NULL on error.
  */
 char	*ft_strjoin(const char *s1, const char *s2)
 {
